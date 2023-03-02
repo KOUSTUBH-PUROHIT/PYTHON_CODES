@@ -1,0 +1,80 @@
+import datetime
+import speech_recognition as sr
+import pyttsx3
+import wikipedia
+
+engine = pyttsx3.init('sapi5')
+voices = engine.getProperty('voices')
+# print(voices[1].id)
+engine.setProperty('voice', voices[1].id)
+
+
+def speak(audio):
+    engine.say(audio)
+    engine.runAndWait()
+
+
+def wishme():
+    hour = (datetime.datetime.now().hour)
+    if hour >= 0 and hour < 12:
+        speak("Goodmorning Sir")
+    elif hour >= 12 and hour < 17:
+        speak("Goodafternoon Sir")
+    elif hour >= 5 and hour < 24:
+        speak("Goodevening Sir")
+
+
+def takeCommand():
+    # It takes microphone input from the user and returns string output
+
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listening...")
+        r.pause_threshold = 1
+        audio = r.listen(source)
+    try:
+        print("Recognizing...")
+        query = r.recognize_google(audio, language='en-in')  # Using google for voice recognition.
+        print(f"User said: {query}\n")  # User query will be printed.
+
+    except Exception as e:
+        # print(e)
+        print("Say that again please...")  # Say that again will be printed in case of improper voice
+        return "None"  # None string will be returned
+    return query
+
+
+if __name__ == '__main__':
+    # takeCommand()
+    wishme()
+    while True:
+        query = takeCommand().lower()
+        if 'wikipedia' in query:
+            speak("Searching Sir please wait....")
+            query = query.replace("wikipedia", "")
+            results = wikipedia.summary(query, sentences=3)
+            speak("According to wikipedia...")
+            print(results)
+            speak(results)
+        #elif 'open google' in query:
+         #   webbrowser.com("google.com")
+        elif 'your name' in query:
+            speak("TONY")
+        elif 'your age' in query:
+            speak("I am 69 years old.")
+        elif ' daddy' in query:
+            speak("your grandfather.")
+        elif 'laugh' in query:
+            speak("ha ha ha ha ha ha ha ha")
+        elif 'owner' in query:
+            speak("")
+        elif 'I love you' in query:
+            speak("sorry, I have a boyfriend")
+        elif 'i like you' in query:
+            speak("I like you too")
+        elif 'do you like' in query:
+            speak("i like to sleep for a very long time ")
+        elif 'eat' in query:
+            speak("i like to eat electricity , i have a 65 watts charger. ")
+        elif 'do in your free time' in query:
+            speak("i like to play football , as i have two legs , i also like to go at longtrips, like last week i go to goa.")
