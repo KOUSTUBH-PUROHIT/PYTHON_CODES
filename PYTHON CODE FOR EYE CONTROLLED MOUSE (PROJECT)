@@ -1,0 +1,60 @@
+import cv2
+'''importing a module cv2 downloaded as opencv-contrib.'''
+import mediapipe as mp
+'''This module is used to check whether a face is there or not.'''
+import pyautogui
+'''Used to control mouse cursor and keyboard buttons with external objects.'''
+
+cam = cv2.VideoCapture(1)
+'''Instruction to open camera and read video from first camera of index 0.'''
+face_mash = mp.solutions.face_mesh.FaceMesh(refine_landmarks=True)
+'''Used to detect that the face is there or not.'''
+screen_w, screen_h = pyautogui.size()
+'''Get the size (width, height) of frame using pyautoGUI'''
+
+while True:
+    '''As video is going every second of frame we have to use loop to capture every frame of second.'''
+    _, frame = cam.read()
+    '''Our camera is reading every frame of our video.'''
+    frame = cv2.flip(frame, 1)
+    '''FLIP VERTICALLY : - As video show some mirror effect we cn flip our video for convenience'''
+    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    '''Converting color(frames) in grey scale/simple color for easy detection.'''
+    output = face_mash.process(rgb_frame)
+    '''Merging our new RGB colours in our frame/videos and get output video.'''
+    landmark_points = output.multi_face_landmarks
+    '''Initialising marks/points on face detected in frame video (at backend).'''
+    frame_h, frame_w, _ = frame.shape
+    '''Initialising frame_height, frame_width.'''
+    if landmark_points:  # If statement open.
+       landmarks = landmark_points[0].landmark
+       ''' To detect only one face in frame video.If many simply detect one and ignore others.'''
+       for id, landmark in enumerate(landmarks[474:478]):  # 474 - 478 --> points location for eyes on our face.
+            x = int(landmark.x * frame_w)
+            '''Giving x a landmark point which determines frame width and get where the circle will form.'''
+            y = int(landmark.y * frame_h)
+            '''giving y a landmark point which determines frame heightand get where the circle will form.'''
+            cv2.circle(frame, (x, y), 3, (0, 255, 0))
+            '''Create circles at x,y index having radius = 3 and RGB = 0, 255, 0,
+            Able to detect landmarks at front end'''
+            if id == 1:
+                screen_x = screen_w / frame_w * x
+                screen_y = screen_h / frame_h * y
+                pyautogui.moveTo(screen_x, screen_y)
+            left = [landmarks[145], landmarks[159]]
+            '''This helps that if we move our face, the detector will also move with our face for further instructions.'''
+            for landmark in left:
+                x = int(landmark.x * frame_w)
+                y = int(landmark.y * frame_h)
+                cv2.circle(frame, (x, y), 3, (0, 255, 255))
+                '''For loop for second eye to detect the blinking of the eye,then click in screen'''
+            if(left[0].y - left[1].y) < 0.004:
+                '''Coordinates for detector circles.'''
+                pyautogui.click()  # click function
+                pyautogui.sleep(1)
+
+    cv2.imshow('EYE CONTROLLED MOUSE ', frame)
+    '''Show some image (opens a window having our camera). video with the prompt name "Eye controlled mouse"'''
+
+    cv2.waitKey(1)
+    '''We have to wait for the user to enter a key for 1 minute.'''
