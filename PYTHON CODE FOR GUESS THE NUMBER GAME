@@ -1,0 +1,19 @@
+import random
+random_variable = random.randint(1,99)
+count = 0
+a = int(input("ENTER A NUMBER BETWEEN 1-100 : "))
+
+while a!=random_variable :
+     if a>random_variable :
+        print("INCORRECT! Please enter a smaller number ")
+        a = int(input("ENTER A NUMBER BETWEEN 1-100 : "))
+        count =  count + 1
+     elif a<random_variable :
+        print("INCORRECT! Please enter a greater number ")
+        a = int(input("ENTER A NUMBER BETWEEN 1-100 : "))
+        count = count + 1
+
+print("CONGO ! YOU GUESS THE CORRECT ANSWER IN",count,"TIME ")
+
+
+
